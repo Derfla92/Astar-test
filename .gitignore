@@ -1,0 +1,4 @@
+.build/
+.maps/
+*.exe
+*.out
