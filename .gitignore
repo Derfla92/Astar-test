@@ -1,4 +1,4 @@
-.build/
-.maps/
+build/
+maps/
 *.exe
 *.out
