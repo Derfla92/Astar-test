@@ -6,7 +6,50 @@
 #include "Renderer.h"
 #include "MazeGenerator.h"
 
+#define DEBUG false
+
 void print_titlebar(sf::Clock &, double const &);
+
+#if DEBUG
+
+void push(std::vector<int> &v, int number)
+{
+    v.push_back(number);
+
+    std::push_heap(v.begin(), v.end(), [](int a, int b) { return a > b; });
+}
+void print(std::vector<int> v)
+{
+    for (auto i : v)
+        std::cout << i << ", ";
+    std::cout << std::endl;
+}
+
+int main()
+{
+    std::vector<int> v{};
+
+    auto pop = [](int a, int b) { return a > b; };
+
+    push(v, 6);
+    print(v);
+    push(v, 2);
+    print(v);
+    push(v, 9);
+    print(v);
+    push(v, 3);
+    print(v);
+    push(v, 10);
+    print(v);
+    push(v, 1);
+    print(v);
+
+    std::pop_heap(v.begin(), v.end());
+    std::cout << v.back();
+
+    return 0;
+}
+#endif
 
 /* int main()
 {
@@ -15,12 +58,13 @@ void print_titlebar(sf::Clock &, double const &);
     return 0;
 } */
 
+#if !DEBUG
 int main()
 {
 
-    PathFinding pathFinder{20, 20};
+    PathFinding pathFinder{10, 10};
     sf::Vector2f start{0, 0};
-    sf::Vector2f goal{static_cast<float>(pathFinder.map_width- 1), static_cast<float>(pathFinder.map_height - 3)};
+    sf::Vector2f goal{static_cast<float>(pathFinder.map_width - 1), static_cast<float>(pathFinder.map_height - 3)};
     sf::Vector2f temp_goal{};
 
     sf::RectangleShape tile{};
@@ -89,7 +133,6 @@ int main()
                 }
             }
         }
-        
 
         //Draw all tiles
         Renderer::window.clear();
@@ -97,13 +140,30 @@ int main()
         {
             temp_goal = goal;
             sf::Clock time{};
-            time.restart();
-            path = pathFinder.construct_path(start, temp_goal);
-            float elapsed_time{static_cast<float>(time.getElapsedTime().asMilliseconds())};
-            std::cout << "Time the algorithm took: "
-                      << elapsed_time/1000.0f << " s" << std::endl;
-            std::cout << "----------------------------------" << std::endl;
-            
+            float elapsed_time{};
+
+            //Use std::sort()
+            if (false)
+            {
+                time.restart();
+                path = pathFinder.construct_path_with_stl_sort(start, temp_goal);
+                elapsed_time = static_cast<float>(time.getElapsedTime().asMilliseconds());
+                time.restart();
+                std::cout << "Time the algorithm took: "
+                          << elapsed_time / 1000.0f << " s" << std::endl;
+                std::cout << "----------------------------------" << std::endl;
+            }
+            if (true)
+            {
+                //Use std::make_heap()
+                time.restart();
+                path = pathFinder.construct_path_with_heap(start, temp_goal);
+                elapsed_time = static_cast<float>(time.getElapsedTime().asMilliseconds());
+                time.restart();
+                std::cout << "Time the algorithm took: "
+                          << elapsed_time / 1000.0f << " s" << std::endl;
+                std::cout << "----------------------------------" << std::endl;
+            }
         }
 
         for (int x = 0; x < pathFinder.map_width; x++)
@@ -182,3 +242,4 @@ void print_titlebar(sf::Clock &clck, double const &fps)
     sleep(sf::milliseconds(1000.0 / fps) - clck.getElapsedTime());
     clck.restart();
 }
+#endif
