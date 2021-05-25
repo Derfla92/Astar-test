@@ -153,9 +153,10 @@ int main()
                           << elapsed_time / 1000.0f << " s" << std::endl;
                 std::cout << "----------------------------------" << std::endl;
             }
+            //Use std::make_heap()
             if (true)
             {
-                //Use std::make_heap()
+                
                 time.restart();
                 path = pathFinder.construct_path_with_heap(start, temp_goal);
                 elapsed_time = static_cast<float>(time.getElapsedTime().asMilliseconds());
