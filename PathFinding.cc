@@ -24,51 +24,41 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_stl_sort(sf::V
     obsticle_time = 0;
     while (open.size() > 0)
     {
+        //Sort the list of nodes to check, sorting with the node with the lowest F-cost to be in the back.
         std::sort(open.begin(), open.end(), [](Node *a, Node *b) { return a->get_f_cost() > b->get_f_cost(); });
         currentNode = open.back();
         open.pop_back();
         closed.push_back(currentNode);
 
+        //Check if shortest path has been found.
         if (currentNode->pos == end_node->pos)
         {
-            //std::cout << "found shortest path" << std::endl;
             Node *current = currentNode;
             while (current != nullptr)
             {
                 path.push_back(current);
                 current = current->parent;
             }
-            //exit(0);
             print_info();
             return path;
         }
+        //Finding Children for the current node.
         std::vector<Node *> children{};
-        //std::cout << "Parent node: " << "x: " <<currentNode->pos.x << ", y: " << currentNode->pos.y << std::endl;
         for (int i = 0; i < 8; i++)
         {
-            //std::cout << "Looking at: " << "x: " << currentNode->pos.x + directions[i].x << ", y: " << currentNode->pos.y + directions[i].y << ". ";
             if (currentNode->pos.x + directions[i].x < map_width && currentNode->pos.y + directions[i].y < map_height)
             {
                 if (currentNode->pos.x + directions[i].x >= 0 && currentNode->pos.y + directions[i].y >= 0)
                 {
                     if (!is_obsticle(currentNode->pos.x + directions[i].x, currentNode->pos.y + directions[i].y))
                     {
-                        //std::cout << "(" <<currentNode->pos.x << " + " << directions[i].x << ") * " << map_width << " + (" << currentNode->pos.y << " + " << directions[i].y << ") ="<< index << std::endl;
                         Node *child = new Node(currentNode->pos + directions[i], currentNode);
-                        //std::cout << std::right << std::setw(17) << "Adding node x: " << temp->pos.x << ", y: " << temp->pos.y << " to the children list." << std::endl;
                         children.push_back(child);
                     }
                 }
-                else
-                {
-                    //std::cout << " Node is outside of the min bounds." << std::endl;
-                }
-            }
-            else
-            {
-                //std::cout << "Node is outside of the max bounds." << std::endl;
             }
         }
+
         iterations++;
         for (auto &child : children)
         {
@@ -76,7 +66,6 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_stl_sort(sf::V
             {
                 continue;
             }
-
             child->g_cost = currentNode->g_cost + 10;
             child->h_cost = pow(child->pos.x - end.x, 2) + pow(child->pos.y - end.y, 2);
             Node *node = get_node_with_pos(open, child->pos);
@@ -87,16 +76,10 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_stl_sort(sf::V
                     continue;
                 }
             }
-            /* auto lower = std::lower_bound(open.begin(),open.end(),[child](Node* node){return node->get_f_cost() < child->get_f_cost();});
-            std::cout << "Lower: " << (*lower)->get_f_cost() << "| Child: " << child->get_f_cost() << std::endl; */
             open.push_back(child);
         }
-
-        //std::cout << "Sizes" << std::endl;
-        //std::cout << "  children: " << children.size() << std::endl;
-        //std::cout << "  closed: " << closed.size() << std::endl;
-        //std::cout << "  open: " << open.size() << std::endl;
     }
+    std::cout << "Used std::sort method." << std::endl;
     print_info();
     return path;
 }
@@ -127,44 +110,34 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_heap(sf::Vecto
         open.pop_back();
         closed.push_back(currentNode);
 
+        //Check if shortest path has been found.
         if (currentNode->pos == end_node->pos)
         {
-            //std::cout << "found shortest path" << std::endl;
             Node *current = currentNode;
             while (current != nullptr)
             {
                 path.push_back(current);
                 current = current->parent;
             }
-            //exit(0);
+            std::cout << "Used std::heap method." << std::endl;
             print_info();
             return path;
         }
+
+        //Finding Children for the current node.
         std::vector<Node *> children{};
-        //std::cout << "Parent node: " << "x: " <<currentNode->pos.x << ", y: " << currentNode->pos.y << std::endl;
         for (int i = 0; i < 8; i++)
         {
-            //std::cout << "Looking at: " << "x: " << currentNode->pos.x + directions[i].x << ", y: " << currentNode->pos.y + directions[i].y << ". ";
             if (currentNode->pos.x + directions[i].x < map_width && currentNode->pos.y + directions[i].y < map_height)
             {
                 if (currentNode->pos.x + directions[i].x >= 0 && currentNode->pos.y + directions[i].y >= 0)
                 {
                     if (!is_obsticle(currentNode->pos.x + directions[i].x, currentNode->pos.y + directions[i].y))
                     {
-                        //std::cout << "(" <<currentNode->pos.x << " + " << directions[i].x << ") * " << map_width << " + (" << currentNode->pos.y << " + " << directions[i].y << ") ="<< index << std::endl;
                         Node *child = new Node(currentNode->pos + directions[i], currentNode);
-                        //std::cout << std::right << std::setw(17) << "Adding node x: " << temp->pos.x << ", y: " << temp->pos.y << " to the children list." << std::endl;
                         children.push_back(child);
                     }
                 }
-                else
-                {
-                    //std::cout << " Node is outside of the min bounds." << std::endl;
-                }
-            }
-            else
-            {
-                //std::cout << "Node is outside of the max bounds." << std::endl;
             }
         }
         iterations++;
@@ -174,7 +147,6 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_heap(sf::Vecto
             {
                 continue;
             }
-
             child->g_cost = currentNode->g_cost + 10;
             child->h_cost = pow(child->pos.x - end.x, 2) + pow(child->pos.y - end.y, 2);
             Node *node = get_node_with_pos(open, child->pos);
@@ -185,17 +157,11 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_heap(sf::Vecto
                     continue;
                 }
             }
-            /* auto lower = std::lower_bound(open.begin(),open.end(),[child](Node* node){return node->get_f_cost() < child->get_f_cost();});
-            std::cout << "Lower: " << (*lower)->get_f_cost() << "| Child: " << child->get_f_cost() << std::endl; */
             open.push_back(child);
             std::push_heap(open.begin(),open.end(),[](Node* a, Node* b){ return a->get_f_cost() > b->get_f_cost();});
         }
-
-        //std::cout << "Sizes" << std::endl;
-        //std::cout << "  children: " << children.size() << std::endl;
-        //std::cout << "  closed: " << closed.size() << std::endl;
-        //std::cout << "  open: " << open.size() << std::endl;
     }
+    std::cout << "Used std::heap method." << std::endl;
     print_info();
     return path;
 }
@@ -211,7 +177,6 @@ bool PathFinding::contains_node_with_pos(const std::vector<Node *> &closed_list,
     sf::Clock time{};
     for (auto node : closed_list)
     {
-        
         if (pos == node->pos)
         {
             closed_time += static_cast<float>(time.getElapsedTime().asMicroseconds());
@@ -228,7 +193,6 @@ PathFinding::Node *PathFinding::get_node_with_pos(const std::vector<Node *> &nod
     sf::Clock time{};
     for (auto node : nodes)
     {
-        
         if (pos == node->pos)
         {
             open_time += static_cast<float>(time.getElapsedTime().asMicroseconds());
@@ -245,7 +209,6 @@ bool PathFinding::is_obsticle(float x, float y)
     sf::Vector2f pos{x,y};
     for (auto obsticle : obsticle_pos)
     {
-        
         if (obsticle == pos)
         {
             obsticle_time += static_cast<float>(time.getElapsedTime().asMicroseconds());
