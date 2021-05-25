@@ -12,6 +12,7 @@ static sf::Vector2f goal{static_cast<float>(pathFinder.map_width - 1), static_ca
 static sf::Vector2f temp_goal{};
 
 void print_titlebar(sf::Clock &, double const &);
+void end_point_movement();
 
 int main()
 {
