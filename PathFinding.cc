@@ -22,10 +22,15 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_stl_sort(sf::V
     closed_time = 0;
     open_time = 0;
     obsticle_time = 0;
+    open_list_sorted = 0;
+    open_sorted_time = 0;
     while (open.size() > 0)
-    {
+    {   
+        sf::Clock timer{};
         //Sort the list of nodes to check, sorting with the node with the lowest F-cost to be in the back.
         std::sort(open.begin(), open.end(), [](Node *a, Node *b) { return a->get_f_cost() > b->get_f_cost(); });
+        open_list_sorted++;
+        open_sorted_time += timer.getElapsedTime().asMicroseconds();
         currentNode = open.back();
         open.pop_back();
         closed.push_back(currentNode);
@@ -75,6 +80,11 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_stl_sort(sf::V
                 {
                     continue;
                 }
+                else
+                {
+                    node->g_cost = child->g_cost;
+                }
+                continue;
             }
             open.push_back(child);
         }
@@ -103,6 +113,8 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_heap(sf::Vecto
     closed_time = 0;
     open_time = 0;
     obsticle_time = 0;
+    open_list_sorted = 0;
+    open_sorted_time = 0;
     while (open.size() > 0)
     {
         std::pop_heap(open.begin(),open.end(),[](Node* a, Node* b){ return a->get_f_cost() > b->get_f_cost();});
@@ -156,6 +168,11 @@ std::vector<PathFinding::Node *> PathFinding::construct_path_with_heap(sf::Vecto
                 {
                     continue;
                 }
+                else
+                {
+                    node->g_cost = child->g_cost;
+                }
+                continue;
             }
             open.push_back(child);
             std::push_heap(open.begin(),open.end(),[](Node* a, Node* b){ return a->get_f_cost() > b->get_f_cost();});
@@ -222,6 +239,10 @@ bool PathFinding::is_obsticle(float x, float y)
 
 void PathFinding::print_info()const
 {
+    std::cout << "Open list sorted: " << open_list_sorted << std::endl;
+    std::cout << "Total time to sort Open list: " << open_sorted_time/1000000.0f << " seconds" <<  std::endl;
+    std::cout << "Average time to sort Open list: " << (open_sorted_time/open_list_sorted) << " microseconds" << std::endl; 
+    std::cout << std::endl;
     std::cout << "Obsticle list checked: " << obsticle_list_checked << std::endl;
     std::cout << "Total time to check Obsticle list: " << obsticle_time/1000000.0f << " seconds" <<  std::endl;
     std::cout << "Average time to check Obsticle list: " << (obsticle_time/obsticle_list_checked) << " microseconds" << std::endl; 

@@ -6,9 +6,10 @@
 #include "Renderer.h"
 #include "MazeGenerator.h"
 
-static PathFinding pathFinder{10, 10};
-static sf::Vector2f start{0, 0};
-static sf::Vector2f goal{static_cast<float>(pathFinder.map_width - 1), static_cast<float>(pathFinder.map_height - 3)};
+static PathFinding pathFinder{35, 39};
+static sf::Vector2f start{16,7};
+//static sf::Vector2f goal{static_cast<float>(pathFinder.map_width - 1), static_cast<float>(pathFinder.map_height - 3)};
+static sf::Vector2f goal{16,24};
 static sf::Vector2f temp_goal{};
 
 void print_titlebar(sf::Clock &, double const &);
@@ -35,10 +36,64 @@ int main()
     sf::Clock clock{};
     double const fps{60.0};
 
-    for (int i = 0; i < pathFinder.map_height - 1; i++)
+    //Player wall
+    pathFinder.insert_obsticle(11,4);
+    pathFinder.insert_obsticle(12,4);
+    pathFinder.insert_obsticle(12,5);
+    pathFinder.insert_obsticle(13,5);
+    pathFinder.insert_obsticle(13,6);
+    pathFinder.insert_obsticle(14,6);
+    pathFinder.insert_obsticle(14,7);
+    pathFinder.insert_obsticle(15,7);
+    pathFinder.insert_obsticle(15,8);
+    pathFinder.insert_obsticle(16,8);
+    pathFinder.insert_obsticle(17,8);
+    pathFinder.insert_obsticle(17,7);
+    pathFinder.insert_obsticle(18,7);
+    pathFinder.insert_obsticle(18,6);
+    pathFinder.insert_obsticle(19,6);
+    pathFinder.insert_obsticle(19,5);
+    pathFinder.insert_obsticle(20,5);
+    pathFinder.insert_obsticle(20,4);
+    pathFinder.insert_obsticle(21,4);
+
+    for(int i=9;i <24; i++)
+    {
+        pathFinder.insert_obsticle(i,16);
+    }
+
+    //Zombie wall
+    pathFinder.insert_obsticle(21,27);
+    pathFinder.insert_obsticle(20,27);
+    pathFinder.insert_obsticle(20,26);
+    pathFinder.insert_obsticle(19,26);
+    pathFinder.insert_obsticle(19,25);
+    pathFinder.insert_obsticle(18,25);
+    pathFinder.insert_obsticle(18,24);
+    pathFinder.insert_obsticle(17,24);
+    pathFinder.insert_obsticle(17,23);
+    pathFinder.insert_obsticle(16,23);
+    pathFinder.insert_obsticle(15,23);
+    pathFinder.insert_obsticle(15,24);
+    pathFinder.insert_obsticle(14,24);
+    pathFinder.insert_obsticle(14,25);
+    pathFinder.insert_obsticle(13,25);
+    pathFinder.insert_obsticle(13,26);
+    pathFinder.insert_obsticle(12,26);
+    pathFinder.insert_obsticle(12,27);
+    pathFinder.insert_obsticle(11,27);
+    
+
+
+
+
+
+
+
+    /* for (int i = 0; i < pathFinder.map_height - 1; i++)
     {
         pathFinder.obsticle_pos.push_back(sf::Vector2f(3, i));
-    }
+    } */
     std::vector<PathFinding::Node *> path{};
     while (Renderer::window.isOpen())
     {
@@ -59,6 +114,7 @@ int main()
                 path = pathFinder.construct_path_with_stl_sort(start, temp_goal);
                 elapsed_time = static_cast<float>(time.getElapsedTime().asMilliseconds());
                 time.restart();
+                std::cout << "Number of nodes in the path: " << path.size() << std::endl;
                 std::cout << "Time the algorithm took: "
                           << elapsed_time / 1000.0f << " s" << std::endl;
                 std::cout << "----------------------------------" << std::endl;
@@ -70,6 +126,7 @@ int main()
                 path = pathFinder.construct_path_with_heap(start, temp_goal);
                 elapsed_time = static_cast<float>(time.getElapsedTime().asMilliseconds());
                 time.restart();
+                std::cout << "Number of nodes in the path: " << path.size() << std::endl;
                 std::cout << "Time the algorithm took: "
                           << elapsed_time / 1000.0f << " s" << std::endl;
                 std::cout << "----------------------------------" << std::endl;

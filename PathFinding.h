@@ -47,7 +47,9 @@ public:
         }
     };
     PathFinding(int = 10, int = 10);
+    
     std::vector<sf::Vector2f> obsticle_pos{};
+
     std::vector<Node *> construct_path_with_stl_sort(sf::Vector2f &, sf::Vector2f &);
     std::vector<Node *> construct_path_with_heap(sf::Vector2f &, sf::Vector2f &);
     void insert_obsticle(int, int);
@@ -55,6 +57,9 @@ public:
     Node *get_node_with_pos(const std::vector<Node *> &, sf::Vector2f &);
     bool is_obsticle(float x, float y);
     void print_info() const;
+    int open_list_sorted{};
+    float open_sorted_time{};
+
     int obsticle_list_checked{};
     float obsticle_time{};
 
